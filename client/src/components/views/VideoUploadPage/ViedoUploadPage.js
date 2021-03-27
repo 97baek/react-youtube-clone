@@ -3,6 +3,7 @@ import { Typography, Button, Form, message, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Dropzone from "react-dropzone";
+import { useSelector } from "react-redux";
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -15,12 +16,12 @@ const privateOptions = [
 const categoryOptions = [
   { value: 0, label: "Film & Animation" },
   { value: 1, label: "Autos & Vehicles" },
-  { value: 2, label: "Film & Animation" },
-  { value: 3, label: "Music" },
-  { value: 4, label: "Pets & Animals" },
+  { value: 2, label: "Music" },
+  { value: 3, label: "Pets & Animals" },
 ];
 
-const ViedoUploadPage = () => {
+const ViedoUploadPage = ({ history }) => {
+  const user = useSelector((state) => state.user.userData); // 리덕스를 이용해 user 정보를 모두 가져옴
   const [viedoTitle, setVideoTitle] = useState("");
   const [description, setDescription] = useState("");
   const [privateOption, setPrivateOption] = useState(0); // public일땐 1
@@ -82,12 +83,38 @@ const ViedoUploadPage = () => {
       });
   };
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    const variables = {
+      writer: user._id,
+      title: viedoTitle,
+      description,
+      privacy: privateOption,
+      filePath,
+      category,
+      duration,
+      thumbnail: thumbnailPath,
+    };
+
+    axios.post("/api/video/uploadVideo", variables).then((res) => {
+      if (res.data.success) {
+        message.success("성공적으로 업로드 했습니다");
+        setTimeout(() => {
+          history.push("/");
+        }, 3000);
+      } else {
+        alert("비디오 업로드에 실패했습니다.");
+      }
+    });
+  };
+
   return (
     <div style={{ maxWidth: "700px", margin: "2rem auto" }}>
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
         <Title level={2}>Upload Video</Title>
       </div>
-      <Form>
+      <Form onSubmit={onSubmit}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           {/* Drop Zone */}
           <Dropzone onDrop={onDrop} multiple={false} maxSize={100000000}>
@@ -143,7 +170,7 @@ const ViedoUploadPage = () => {
         </select>
         <br />
         <br />
-        <Button type="primary" size="large" onClick>
+        <Button type="primary" size="large" onClick={onSubmit}>
           Submit
         </Button>
       </Form>

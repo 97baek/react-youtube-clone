@@ -3,7 +3,7 @@ const multer = require("multer");
 const path = require("path");
 const router = express.Router();
 const ffmpeg = require("fluent-ffmpeg");
-// const { Video } = require("../models/Video");
+const { Video } = require("../models/Video");
 
 const { auth } = require("../middleware/auth");
 
@@ -38,6 +38,16 @@ router.post("/uploadfiles", (req, res) => {
       return res.json({ success: false, err });
     }
     return res.json({ success: true, url: res.req.file.path, fileName: res.req.file.filename });
+  });
+});
+
+router.post("/uploadVideo", (req, res) => {
+  // 비디오 정보들 저장
+  const video = new Video(req.body); // 클라이언트에서 보낸 모든 variables들을 담음
+
+  video.save((err, doc) => {
+    if (err) return res.json({ success: false, err });
+    return res.status(200).json({ success: true });
   });
 });
 
