@@ -25,6 +25,9 @@ const ViedoUploadPage = () => {
   const [description, setDescription] = useState("");
   const [privateOption, setPrivateOption] = useState(0); // public일땐 1
   const [category, setCategory] = useState("Film & Animation");
+  const [filePath, setFilePath] = useState("");
+  const [duration, setDuration] = useState("");
+  const [thumbnailPath, setThumbnailPath] = useState("");
 
   const onTitleChange = (e) => {
     setVideoTitle(e.currentTarget.value);
@@ -54,6 +57,25 @@ const ViedoUploadPage = () => {
       .then((res) => {
         if (res.data.success) {
           console.log(res.data);
+          let variable = {
+            url: res.data.url,
+            fileName: res.data.fileName,
+          };
+
+          setFilePath(res.data.url);
+
+          axios
+            .post("/api/video/thumbnail", variable) // variable을 서버에 보내준 뒤
+            .then((res) => {
+              if (res.data.success) {
+                setDuration(res.data.fileDuration);
+                setThumbnailPath(res.data.thumbsFilePath);
+                console.log(thumbnailPath);
+                console.log(res.data);
+              } else {
+                alert("썸네일 등록에 실패했습니다.");
+              }
+            });
         } else {
           alert("비디오 업로드를 실패했습니다.");
         }
@@ -87,9 +109,11 @@ const ViedoUploadPage = () => {
             )}
           </Dropzone>
           {/* Thumbnail */}
-          <div>
-            <img src="" alt="" />
-          </div>
+          {thumbnailPath && (
+            <div>
+              <img src={`http://localhost:5000/${thumbnailPath}`} alt="thumbnail" />
+            </div>
+          )}
         </div>
         <br />
         <br />
