@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col, List, Avatar } from "antd";
 import axios from "axios";
+import SideVideos from "./Sections/SideVideos/SideVideos";
 
 function VideoDetailPage() {
   const { videoId } = useParams();
@@ -11,21 +12,19 @@ function VideoDetailPage() {
   useEffect(() => {
     axios.post("/api/video/getVideoDetails", variable).then((res) => {
       if (res.data.success) {
-        console.log(res.data);
         setVideoDetails(res.data.videoDetail);
         console.log(videoDetails);
       } else {
         alert("비디오 정보를 가져오는 데 실패했습니다.");
       }
     });
-  }, []);
+  }, [videoId]);
 
   return (
-    // <div>hello!2</div>
     <>
       {videoDetails.writer ? (
-        <Row gutter={[16, 16]}>
-          <Col lg={18} xs={24}>
+        <Row>
+          <Col lg={16} xs={24}>
             <div style={{ width: "100%", padding: "3rem 4rem" }}>
               <video
                 style={{ width: "100%" }}
@@ -45,7 +44,7 @@ function VideoDetailPage() {
             </div>
           </Col>
           <Col lg={6} xs={24}>
-            Side Videos
+            <SideVideos />
           </Col>
         </Row>
       ) : (
