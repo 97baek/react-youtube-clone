@@ -24,8 +24,8 @@ function LandingPage() {
     let seconds = Math.floor(video.duration - minutes * 60);
 
     return (
-      <Col lg={6} md={8} xs={24}>
-        <Link to={`/video/post/${video._id}`}>
+      <Col key={video._id} lg={6} md={8} xs={24}>
+        <Link to={`/video/${video._id}`}>
           <div style={{ position: "relative" }}>
             <img
               src={`http://localhost:5000/${video.thumbnail}`}

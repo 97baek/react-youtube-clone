@@ -61,6 +61,15 @@ router.get("/getVideos", (req, res) => {
     });
 });
 
+router.post("/getVideoDetails", (req, res) => {
+  Video.findOne({ _id: req.body.videoId }) // 클라이언트에서 보낸 videoId를 id에 넣어 비디오 찾기
+    .populate("writer")
+    .exec((err, videoDetail) => {
+      if (err) return res.status(400).send(err);
+      return res.status(200).json({ success: true, videoDetail });
+    });
+});
+
 router.post("/thumbnail", (req, res) => {
   // 썸네일 생성 및 비디오 러닝타임 가져오기
 
