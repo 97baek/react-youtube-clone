@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-function Subscribe({ userTo }) {
+function Subscribe({ userTo, userFrom }) {
   const [subscribeNumber, setSubscribeNumber] = useState(0);
   const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
-    const variable = { userTo };
+    const variable = { userTo, userFrom };
     axios
       .post("/api/subscribe/subscribeNumber", variable) //
       .then((res) => {
@@ -17,7 +17,7 @@ function Subscribe({ userTo }) {
         }
       });
 
-    const subscribedVariable = { userTo, userFrom: localStorage.getItem("userId") };
+    const subscribedVariable = { userTo, userFrom };
     axios
       .post("/api/subscribe/subscribed", subscribedVariable) //
       .then((res) => {
@@ -28,6 +28,39 @@ function Subscribe({ userTo }) {
         }
       });
   });
+
+  const onSubscribe = () => {
+    let subscribeVariable = {
+      userTo,
+      userFrom,
+    };
+    // 이미 구독중이라면
+    if (subscribed) {
+      axios
+        .post("/api/subscribe/notSubscribe", subscribeVariable) //
+        .then((res) => {
+          if (res.data.success) {
+            setSubscribeNumber(subscribeNumber - 1);
+            setSubscribed(!subscribed);
+          } else {
+            alert("구독을 취소하는 데 실패했습니다!");
+          }
+        });
+
+      // 구독중이 아니라면
+    } else {
+      axios
+        .post("/api/subscribe/subscribe", subscribeVariable) //
+        .then((res) => {
+          if (res.data.success) {
+            setSubscribeNumber(subscribeNumber + 1);
+            setSubscribed(!subscribed);
+          } else {
+            alert("구독하는 데 실패했습니다!");
+          }
+        });
+    }
+  };
 
   return (
     <div>
@@ -41,8 +74,9 @@ function Subscribe({ userTo }) {
           fontWeight: "500",
           fontSize: "1rem",
           textTransform: "uppercase",
+          cursor: "pointer",
         }}
-        onClick
+        onClick={onSubscribe}
       >
         {subscribeNumber} {subscribed ? "SUBSCRIBED" : "SUBSCRIBE"}
       </button>

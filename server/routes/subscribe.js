@@ -27,4 +27,21 @@ router.post("/subscribed", (req, res) => {
     });
 });
 
+router.post("/notSubscribe", (req, res) => {
+  Subscriber.findOneAndDelete({ userTo: req.body.userTo, userFrom: req.body.userFrom }) // 이미 subscribe 중이므로 찾아서 없애줌
+    .exec((err, doc) => {
+      if (err) return res.status(400).json({ success: false, err });
+      return res.status(200).json({ success: true, doc });
+    });
+});
+
+router.post("/subscribe", (req, res) => {
+  const subscribe = new Subscriber(req.body);
+
+  subscribe.save((err) => {
+    if (err) return res.status(400).json({ success: false, err });
+    return res.status(200).json({ success: true });
+  });
+});
+
 module.exports = router;
