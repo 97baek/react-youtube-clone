@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col, List, Avatar } from "antd";
 import axios from "axios";
-import SideVideos from "./Sections/SideVideos/SideVideos";
+import SideVideos from "./Sections/SideVideos";
+import Subscribe from "./Sections/Subscribe";
 
 function VideoDetailPage() {
   const { videoId } = useParams();
@@ -32,7 +33,7 @@ function VideoDetailPage() {
                 controls
               />
 
-              <List.Item actions>
+              <List.Item actions={[<Subscribe userTo={videoDetails.writer._id} />]}>
                 <List.Item.Meta
                   avatar={<Avatar src={videoDetails.writer.image} />}
                   title={videoDetails.title}
