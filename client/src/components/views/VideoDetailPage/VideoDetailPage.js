@@ -36,7 +36,7 @@ function VideoDetailPage() {
               <List.Item actions>
                 <List.Item.Meta
                   avatar={<Avatar src={videoDetails.writer.image} />}
-                  title={videoDetails.writer.name}
+                  title={videoDetails.title}
                   description={videoDetails.description}
                 />
               </List.Item>
