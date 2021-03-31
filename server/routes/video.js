@@ -4,6 +4,7 @@ const path = require("path");
 const router = express.Router();
 const ffmpeg = require("fluent-ffmpeg");
 const { Video } = require("../models/Video");
+const { Subscriber } = require("../models/Subscriber");
 
 const { auth } = require("../middleware/auth");
 
@@ -67,6 +68,26 @@ router.post("/getVideoDetails", (req, res) => {
     .exec((err, videoDetail) => {
       if (err) return res.status(400).send(err);
       return res.status(200).json({ success: true, videoDetail });
+    });
+});
+
+router.post("/getSubscriptionVideos", (req, res) => {
+  // 자신의 아이디를 가지고 구독하는 사람들을 찾는다.
+  Subscriber.find({ userFrom: req.body.userFrom }) //
+    .exec((err, subscriberInfo) => {
+      if (err) return res.status(400).send(err);
+      let subscribedUser = [];
+
+      subscriberInfo.map((subscriber, i) => {
+        subscribedUser.push(subscriber.userTo);
+      });
+      // 찾은 사람들의 구독 비디오를 가져온다.
+      Video.find({ writer: { $in: subscribedUser } }) // $in은 subscribedUser이 한명이 아니어도 모든 사람들의 아이디를 가지고 writer를 ㅏㅈ을 수 있음
+        .populate("writer")
+        .exec((err, videos) => {
+          if (err) return res.status(400).send(err);
+          return res.status(200).json({ success: true, videos });
+        });
     });
 });
 
